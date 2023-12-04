@@ -6,20 +6,20 @@ from psychopy.hardware import keyboard
 #port = serial.Serial("COM3", baudrate=115200)
 
 #load audio
-audio_file_path = 'podcast_clip_1.wav'
+#audio_file_path = 'podcast_clip_1.wav'
 
 csv_files = ["clip_1_input.csv", "clip_2_input.csv", "clip_3_input.csv"]
 wav_files = ["podcast_clip_1.wav", "podcast_clip_2.wav", "podcast_clip_3.wav"]
 
 #sound_stim = sound.Sound(audio_file_path, stereo=True, hamming=True)
-sound_stim = sound.Sound(sound.AudioClip.load (audio_file_path))
+#sound_stim = sound.Sound(sound.AudioClip.load (audio_file_path))
 
 # Load data from CSV file
-data = []
-with open('clip_1_input.csv', 'r', encoding="utf-8-sig") as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        data.append(row)
+#data = []
+#with open('clip_1_input.csv', 'r', encoding="utf-8-sig") as csvfile:
+#    reader = csv.DictReader(csvfile)
+#    for row in reader:
+#        data.append(row)
 
 # Initialize PsychoPy window
 win = visual.Window(size=(1920, 1080), fullscr=True, color='black', waitBlanking=False,units='height')
@@ -76,37 +76,50 @@ while True:
     if 'escape' in keys:
         core.quit()
 
-sound_stim.play()
-#time sleep likely problematic for timing
-time.sleep(float(data[0]['Start']))
+for i in range(0, len(csv_files)):
+    # load sound stim
+    sound_stim = sound.Sound(sound.AudioClip.load(wav_files[i]))
 
-# Main experiment loop
-for index in range(len(data)):
-    trial = data[index]
-    stim_word = trial['Word']
-    start_time = float(trial['Start'])
-    end_time = float(trial['End'])
-    event_code = int(trial['Code'])
-    # Display word from start_time to end_time
-    text_stim.text = stim_word
-    text_stim.draw()
-    PS_word.draw()
-    #port.write(str.encode(chr(event_code)))
-    #port.flush
+    data = []
+    with open(csv_files[i], 'r', encoding="utf-8-sig") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            data.append(row)
     
-    win.flip() 
-    
-    fixation_cross.draw()
-    time.sleep(end_time - start_time)
-    
-    win.flip()
-    
-    if index < len(data)-1:  
-        sleep_time = float(data[index+1]['Start']) - end_time
-        time.sleep(sleep_time)
-    if 'escape' in event.getKeys():
-        core.quit()
+    sound_stim.play()
+
+    #time sleep likely problematic for timing
+    time.sleep(float(data[0]['Start']))
+
+    # Main experiment loop
+    for index in range(len(data)):
+        trial = data[index]
+        stim_word = trial['Word']
+        start_time = float(trial['Start'])
+        end_time = float(trial['End'])
+        event_code = int(trial['Code'])
+        # Display word from start_time to end_time
+        text_stim.text = stim_word
+        text_stim.draw()
+        PS_word.draw()
+        #port.write(str.encode(chr(event_code)))
+        #port.flush
         
-    win.flip()
+        win.flip() 
+        
+        fixation_cross.draw()
+        time.sleep(end_time - start_time)
+        
+        win.flip()
+        
+        if index < len(data)-1:  
+            sleep_time = float(data[index+1]['Start']) - end_time
+            time.sleep(sleep_time)
+        if 'escape' in event.getKeys():
+            core.quit()
+            
+        win.flip()
+
+
 # Close PsychoPy window at the end of the experiment
 win.close()
