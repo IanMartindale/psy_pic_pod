@@ -7,6 +7,10 @@ from psychopy.hardware import keyboard
 
 #load audio
 audio_file_path = 'podcast_clip_1.wav'
+
+csv_files = ["clip_1_input.csv", "clip_2_input.csv", "clip_3_input.csv"]
+wav_files = ["podcast_clip_1.wav", "podcast_clip_2.wav", "podcast_clip_3.wav"]
+
 #sound_stim = sound.Sound(audio_file_path, stereo=True, hamming=True)
 sound_stim = sound.Sound(sound.AudioClip.load (audio_file_path))
 
