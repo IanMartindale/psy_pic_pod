@@ -2,24 +2,15 @@ import csv
 from psychopy import visual, core, event, sound, monitors
 import time 
 from psychopy.hardware import keyboard
-#import serial
-#port = serial.Serial("COM3", baudrate=115200)
 
-#load audio
-#audio_file_path = 'podcast_clip_1.wav'
+ENABLE_EVENT_CODES=False
+
+if ENABLE_EVENT_CODES:
+    import serial
+    port = serial.Serial("COM3", baudrate=115200)
 
 csv_files = ["clip_1_input.csv", "clip_2_input.csv", "clip_3_input.csv"]
 wav_files = ["podcast_clip_1.wav", "podcast_clip_2.wav", "podcast_clip_3.wav"]
-
-#sound_stim = sound.Sound(audio_file_path, stereo=True, hamming=True)
-#sound_stim = sound.Sound(sound.AudioClip.load (audio_file_path))
-
-# Load data from CSV file
-#data = []
-#with open('clip_1_input.csv', 'r', encoding="utf-8-sig") as csvfile:
-#    reader = csv.DictReader(csvfile)
-#    for row in reader:
-#        data.append(row)
 
 # Initialize PsychoPy window
 win = visual.Window(size=(1920, 1080), fullscr=True, color='black', waitBlanking=False,units='height')
@@ -32,8 +23,6 @@ start_text = visual.TextStim(
     pos=(0, 0), height=0.05,
     color='white'
 )
-# Initialize keyboard
-#defaultKeyboard = event.BuilderKeyResponse()
 
 # Display the start screen
 start_text.draw()
@@ -88,6 +77,10 @@ for i in range(0, len(csv_files)):
     
     sound_stim.play()
 
+    if ENABLE_EVENT_CODES:
+            port.write(str.encode(chr(100)))
+            port.flush
+
     #time sleep likely problematic for timing
     time.sleep(float(data[0]['Start']))
 
@@ -102,8 +95,10 @@ for i in range(0, len(csv_files)):
         text_stim.text = stim_word
         text_stim.draw()
         PS_word.draw()
-        #port.write(str.encode(chr(event_code)))
-        #port.flush
+        
+        if ENABLE_EVENT_CODES:
+            port.write(str.encode(chr(event_code)))
+            port.flush
         
         win.flip() 
         
@@ -120,6 +115,11 @@ for i in range(0, len(csv_files)):
             
         win.flip()
 
+    if ENABLE_EVENT_CODES:
+            port.write(str.encode(chr(101)))
+            port.flush
+    
+    time.sleep(3)
 
 # Close PsychoPy window at the end of the experiment
 win.close()
